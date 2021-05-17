@@ -50,13 +50,13 @@ def get_ma15(ticker):
     ma15 = df['close'].rolling(15).mean().iloc[-1]
     return ma15
 
-# orderbook = binance.fetch_order_book('ETH/BTC')
+#orderbook = binance.fetch_order_book('ETH/USDT')
 # for bid in orderbook['bids']:
 #     print(bid[0], bid[1])
 # for ask in orderbook['asks']:
 #     print(ask[0], ask[1])
-# print(orderbook['bids'][0])
-# print(orderbook['asks'][0])
+#print(orderbook['bids'][0])
+#print(orderbook['asks'][0])
 
 with open("api.txt") as f:
     lines = f.readlines()
@@ -80,8 +80,15 @@ def get_balance(ticker):
 #     print("%.1f %f" % (k, ror))
 
 print("Start auto trading!")
-ticker = "BTC/USDT"
-coin = "BTC"
+coin = "ATM"
+ticker = coin + "/USDT"
+print("current_price:", get_current_price(ticker))
+print("target_price :", get_target_price(ticker, 0.5))
+print("ma15         :", get_ma15(ticker))
+print("balance      :", get_balance("USDT"))
+#binance.create_market_buy_order(ticker, 0.001)
+#binance.create_market_sell_order(ticker, 0.00099)
+
 while True:
     try:
         now = datetime.now()
@@ -94,12 +101,12 @@ while True:
             current_price = get_current_price(ticker)
             if target_price < current_price and ma15 < current_price:
                 usdt = get_balance("USDT")
-                if usdt > 5:
-                    binance.create_limit_buy_order(coin, 50, usdt*0.999)
+                if usdt > 600:
+                    binance.create_market_buy_order(ticker, 10)
         else:
-            btc = get_balance(coin)
-            if btc > 0.00008:
-                binance.create_limit_sell_order(coin, 50, btc*0.999)
+            coin = get_balance(coin)
+            if coin > 9.9:
+                binance.create_market_sell_order(ticker, coin*0.999)
         time.sleep(1)
     except Exception as e:
         print(e)
