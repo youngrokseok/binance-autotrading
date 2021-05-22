@@ -79,35 +79,56 @@ def get_balance(ticker):
 #     ror = get_ror(k)
 #     print("%.1f %f" % (k, ror))
 
+def create_market_orders(ticker, coin, amount):
+    while True:
+        try:
+            now = datetime.now()
+            start_time = get_start_time(ticker)
+            end_time = start_time + timedelta(days=1)
+
+            if start_time < now < end_time - timedelta(seconds=10):
+                target_price = get_target_price(ticker, 0.5)
+                ma15 = get_ma15(ticker)
+                current_price = get_current_price(ticker)
+                if target_price < current_price and ma15 < current_price:
+                    usdt = get_balance("USDT")
+                    if usdt > 1000:
+                        binance.create_market_buy_order(ticker, amount)
+                else:
+                    coinPrice = get_balance(coin)
+                    binance.create_market_sell_order(ticker, coinPrice * 0.99)
+            else:
+                coinPrice = get_balance(coin)
+                binance.create_market_sell_order(ticker, coinPrice * 0.99)
+            time.sleep(1)
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+
+def print_results(ticker):
+    print(ticker)
+    print("current_price:", get_current_price(ticker))
+    print("target_price :", get_target_price(ticker, 0.5))
+    print("ma15         :", get_ma15(ticker))
+
+coins = {
+    "ATM": 1,
+    "SHIB": 1000000,
+    "DOGE": 10,
+    "BTC": 0.001,
+    "ADA": 1,
+    "MATIC": 1,
+    "ETH": 0.01,
+    "SUSHI": 1,
+    "AAVE": 0.1,
+    "FIS": 1
+}
+
 print("Start auto trading!")
-coin = "ATM"
-ticker = coin + "/USDT"
-print("current_price:", get_current_price(ticker))
-print("target_price :", get_target_price(ticker, 0.5))
-print("ma15         :", get_ma15(ticker))
-print("balance      :", get_balance("USDT"))
-#binance.create_market_buy_order(ticker, 0.001)
-#binance.create_market_sell_order(ticker, 0.00099)
+#print("balance      :", get_balance("USDT"))
 
-while True:
-    try:
-        now = datetime.now()
-        start_time = get_start_time(ticker)
-        end_time = start_time + timedelta(days=1)
-
-        if start_time < now < end_time - timedelta(seconds=10):
-            target_price = get_target_price(ticker, 0.5)
-            ma15 = get_ma15(ticker)
-            current_price = get_current_price(ticker)
-            if target_price < current_price and ma15 < current_price:
-                usdt = get_balance("USDT")
-                if usdt > 600:
-                    binance.create_market_buy_order(ticker, 10)
-        else:
-            coin = get_balance(coin)
-            if coin > 9.9:
-                binance.create_market_sell_order(ticker, coin*0.999)
-        time.sleep(1)
-    except Exception as e:
-        print(e)
-        time.sleep(1)
+for coin in coins:
+    amount = coins[coin]
+    ticker = coin + "/USDT"
+    #print_results(ticker)
+    create_market_orders(ticker, coin, amount)
