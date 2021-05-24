@@ -80,6 +80,7 @@ def get_balance(ticker):
 #     print("%.1f %f" % (k, ror))
 
 def create_market_orders(ticker, coin, amount):
+    print(ticker)
     while True:
         try:
             now = datetime.now()
@@ -90,16 +91,21 @@ def create_market_orders(ticker, coin, amount):
                 target_price = get_target_price(ticker, 0.5)
                 ma15 = get_ma15(ticker)
                 current_price = get_current_price(ticker)
-                if target_price < current_price and ma15 < current_price:
+                if target_price < current_price:
+                    print("if", target_price, current_price)
                     usdt = get_balance("USDT")
-                    if usdt > 1000:
-                        binance.create_market_buy_order(ticker, amount)
+                    # if usdt > 100:
+                    #     binance.create_market_buy_order(ticker, amount)
                 else:
+                    print("else", target_price, current_price)
                     coinPrice = get_balance(coin)
-                    binance.create_market_sell_order(ticker, coinPrice * 0.99)
+                    # if coinPrice > 0.9:
+                    #     binance.create_market_sell_order(ticker, coinPrice * 0.99)
+                    break
             else:
                 coinPrice = get_balance(coin)
-                binance.create_market_sell_order(ticker, coinPrice * 0.99)
+                # if coinPrice > 0.9:
+                #     binance.create_market_sell_order(ticker, coinPrice * 0.99)
             time.sleep(1)
         except Exception as e:
             print(e)
@@ -113,12 +119,12 @@ def print_results(ticker):
 
 coins = {
     "ATM": 1,
-    "SHIB": 1000000,
-    "DOGE": 10,
+    "DOGE": 1,
     "BTC": 0.001,
     "ADA": 1,
     "MATIC": 1,
     "ETH": 0.01,
+    "SHIB": 1000000,
     "SUSHI": 1,
     "AAVE": 0.1,
     "FIS": 1
