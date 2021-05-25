@@ -81,35 +81,35 @@ def get_balance(ticker):
 
 def create_market_orders(ticker, coin, amount):
     print(ticker)
-    while True:
-        try:
-            now = datetime.now()
-            start_time = get_start_time(ticker)
-            end_time = start_time + timedelta(days=1)
+    try:
+        now = datetime.now()
+        start_time = get_start_time(ticker)
+        end_time = start_time + timedelta(days=1)
 
-            if start_time < now < end_time - timedelta(seconds=10):
-                target_price = get_target_price(ticker, 0.5)
-                ma15 = get_ma15(ticker)
-                current_price = get_current_price(ticker)
-                if target_price < current_price:
-                    print("if", target_price, current_price)
-                    usdt = get_balance("USDT")
-                    if usdt > 100:
-                        binance.create_market_buy_order(ticker, amount)
-                else:
-                    print("else", target_price, current_price)
-                    coinPrice = get_balance(coin)
-                    if coinPrice > 0.01:
-                        binance.create_market_sell_order(ticker, coinPrice * 0.99)
-                    break
+        if start_time < now < end_time - timedelta(seconds=10):
+            target_price = get_target_price(ticker, 0.5)
+            ma15 = get_ma15(ticker)
+            current_price = get_current_price(ticker)
+            if target_price < current_price:
+                print("if", target_price, current_price)
+                usdt = get_balance("USDT")
+                if usdt > 100:
+                    binance.create_market_buy_order(ticker, amount)
             else:
+                print("else", target_price, current_price)
                 coinPrice = get_balance(coin)
+                print(coinPrice)
                 if coinPrice > 0.01:
                     binance.create_market_sell_order(ticker, coinPrice * 0.99)
-            time.sleep(1)
-        except Exception as e:
-            print(e)
-            time.sleep(1)
+                return 0
+        else:
+            coinPrice = get_balance(coin)
+            if coinPrice > 0.01:
+                binance.create_market_sell_order(ticker, coinPrice * 0.99)
+        time.sleep(1)
+    except Exception as e:
+        print(e)
+        time.sleep(1)
 
 def print_results(ticker):
     print(ticker)
@@ -133,8 +133,9 @@ coins = {
 print("Start auto trading!")
 #print("balance      :", get_balance("USDT"))
 
-for coin in coins:
-    amount = coins[coin]
-    ticker = coin + "/USDT"
-    #print_results(ticker)
-    create_market_orders(ticker, coin, amount)
+while True:
+    for coin in coins:
+        amount = coins[coin]
+        ticker = coin + "/USDT"
+        #print_results(ticker)
+        create_market_orders(ticker, coin, amount)
