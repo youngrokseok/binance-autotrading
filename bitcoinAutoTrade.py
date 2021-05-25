@@ -80,6 +80,7 @@ def get_balance(ticker):
 #     print("%.1f %f" % (k, ror))
 
 def create_market_orders(ticker, coin, amount):
+    print(ticker)
     while True:
         try:
             now = datetime.now()
@@ -91,17 +92,19 @@ def create_market_orders(ticker, coin, amount):
                 ma15 = get_ma15(ticker)
                 current_price = get_current_price(ticker)
                 if target_price < current_price:
+                    print("if", target_price, current_price)
                     usdt = get_balance("USDT")
                     if usdt > 100:
                         binance.create_market_buy_order(ticker, amount)
                 else:
+                    print("else", target_price, current_price)
                     coinPrice = get_balance(coin)
-                    if coinPrice > 0.9:
+                    if coinPrice > 0.01:
                         binance.create_market_sell_order(ticker, coinPrice * 0.99)
                     break
             else:
                 coinPrice = get_balance(coin)
-                if coinPrice > 0.9:
+                if coinPrice > 0.01:
                     binance.create_market_sell_order(ticker, coinPrice * 0.99)
             time.sleep(1)
         except Exception as e:
