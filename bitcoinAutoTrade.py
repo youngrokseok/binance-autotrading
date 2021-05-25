@@ -89,7 +89,7 @@ def create_market_orders(ticker, coin, amount):
             target_price = get_target_price(ticker, 0.5)
             ma15 = get_ma15(ticker)
             current_price = get_current_price(ticker)
-            if target_price < current_price:
+            if target_price < current_price and ma15 < current_price:
                 usdt = get_balance("USDT")
                 if usdt > 100:
                     binance.create_market_buy_order(ticker, amount)
@@ -102,6 +102,7 @@ def create_market_orders(ticker, coin, amount):
             coinPrice = get_balance(coin)
             if coinPrice > 0.01:
                 binance.create_market_sell_order(ticker, coinPrice * 0.99)
+            return 0
         time.sleep(1)
     except Exception as e:
         print(e)
@@ -114,16 +115,20 @@ def print_results(ticker):
     print("ma15         :", get_ma15(ticker))
 
 coins = {
-    "ATM": 1,
-    "DOGE": 1,
-    "BTC": 0.001,
-    "ADA": 1,
-    "MATIC": 1,
-    "ETH": 0.01,
-    "SHIB": 1000000,
-    "SUSHI": 1,
-    "AAVE": 0.1,
-    "FIS": 1
+    "ATM": 10,
+    "DOGE": 1000,
+    "BTC": 0.01,
+    "ADA": 100,
+    "MATIC": 100,
+    "ETH": 0.1,
+    "ETC": 10,
+    "WRX": 100,
+    "SHIB": 10000000,
+    "LINA": 10000,
+    "OM": 1000,
+    "SUSHI": 10,
+    "AAVE": 1,
+    "FIS": 100
 }
 
 print("Start auto trading!")
